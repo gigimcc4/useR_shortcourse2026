@@ -86,7 +86,7 @@ big_data_test
 
 ```{r}
 # Attempt to simulate a "too large" allocation
-big_data_test <- tibble(x = rnorm(e19))  # 1 billion rows
+big_data_test <- tibble(x = rnorm(1e9))  # 1 billion rows
 ```
 
 > ### Core Concepts: The 3 Vs
