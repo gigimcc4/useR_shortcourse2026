@@ -1,6 +1,6 @@
 ---
 title: "Module_1_intro_dplyr"
-author: "Elyse, Jeanne & Sheila"
+author: "Elyse, Jeanne, & Sheila"
 format: 
   pdf:
     toc: true
@@ -13,7 +13,11 @@ editor: visual
 
 Welcome to our short course! Today we’ll tackle a common pain point in R: **what happens when your data is just too big?**
 
-But first, let’s get everyone set up and comfortable.
+But first, let’s introduce ourselves and get everyone set up and comfortable.
+
+#### About Us:
+
+NEED TO ADD
 
 #### Learning Objectives:
 
@@ -23,19 +27,17 @@ NEED TO ADD
 
 The tools we’re introducing today **each play a specific role** in helping us work with larger-than-memory datasets — and we can combine them to build scalable workflows.
 
--   
-
-    | Tool     | Purpose                                                                                                                                                                            |
-    |---------------------|---------------------------------------------------|
-    | `arrow`  | 🗂️ (Columnar storage + lazy reading) → Efficiently reads large datasets **without loading the whole file into memory.** Supports fast filtering and streaming from disk.           |
-    | `DBI`    | 🔌 (Database connection interface) → Provides a **common language to connect R to databases.** DuckDB uses it to talk to R.                                                        |
-    | `duckdb` | 🚀 (Fast in-process SQL database) → Allows you to **query large datasets using SQL syntax inside R.** Works especially well for joins, aggregations, and window functions.         |
-    | `dplyr`  | 🛠️ (User-friendly data wrangling) → Offers an **intuitive, readable grammar for filtering, summarizing, and transforming data.** It’s our main pipeline tool.                      |
-    | `dbplyr` | 🔄 (Bridge between dplyr and databases) → **Translates dplyr code into SQL automatically.** Lets you use dplyr pipelines on database tables (like DuckDB) without writing raw SQL. |
+| R Package | Purpose |
+|--------------------------|----------------------------------------------|
+| `arrow` | 🗂️ (Columnar storage + lazy reading) → Efficiently reads large datasets **without loading the whole file into memory.** Supports fast filtering and streaming from disk. |
+| `DBI` | 🔌 (Database connection interface) → Provides a **common language to connect R to databases.** DuckDB uses it to talk to R. |
+| `duckdb` | 🚀 (Fast in-process SQL database) → Allows you to **query large datasets using SQL syntax inside R.** Works especially well for joins, aggregations, and window functions. |
+| `dplyr` | 🛠️ (User-friendly data wrangling) → Offers an **intuitive, readable grammar for filtering, summarizing, and transforming data.** It’s our main pipeline tool. |
+| `dbplyr` | 🔄 (Bridge between dplyr and databases) → **Translates dplyr code into SQL automatically.** Lets you use dplyr pipelines on database tables (like DuckDB) without writing raw SQL. |
 
 ### 🛠️ Load Your Tools
 
--   Let’s load the packages we’ll need today.
+Let’s load the packages we’ll need today.
 
 ```{r}
 
@@ -65,8 +67,6 @@ curl::multi_download(
   "~/Desktop/seattle-library-checkouts.csv",
   resume = TRUE
 )
-
-
 ```
 
 ### 💡 What Makes Big Data Big?
@@ -77,16 +77,18 @@ Example:
 
 ```{r}
 
-# simulation 
+# Simulate 50 billion data values for x
 big_data_test <- tibble(x = rnorm(50000000)) 
 
+# Look at the simulated data
 big_data_test
-
 ```
 
 ```{r}
-# Attempt to simulate a "too large" allocation
-big_data_test <- tibble(x = rnorm(1e9))  # 1 billion rows
+#| eval: false
+
+# Simulate s "too large" allocation
+# too_big_data_test <- tibble(x = rnorm(1e9))  # 1 billion rows
 ```
 
 > ### Core Concepts: The 3 Vs
@@ -205,11 +207,9 @@ starwars |>
 starwars |> 
   mutate(
     height_m = height / 100,
-    bmi = mass / (height_m^2)
-  ) |> 
+    bmi = mass / (height_m^2)) |> 
   select(name, height_m, mass, bmi) |> 
   arrange(desc(bmi))
-
 ```
 
 ### 🔢 count(): Fast group counts
@@ -242,39 +242,42 @@ Here’s a general-purpose `dplyr` pipeline workflow that applies to most tidyve
 
 2.  **Initial Filtering**
 
--   `filter()` to narrow rows of interest early
+    -   `filter()` to narrow rows of interest early
 
 3.  **Select Columns**
 
--   `select()` to reduce memory footprint and focus
+    -   `select()` to reduce memory footprint and focus
 
 4.  **Mutate or Transform**
 
--   `mutate()` to derive new columns (e.g., unit conversions, parsing
+    -   `mutate()` to derive new columns (e.g., unit conversions, parsing
 
 5.  **Group and Summarise**
 
--   `group_by()` + `summarise()` for aggregate
+    -   `group_by()` + `summarise()` for aggregate
 
 6.  **Arrange or Rank**
 
--   `arrange()` or `mutate(rank = ...)` to sort results
+    -   `arrange()` or `mutate(rank = ...)` to sort results
 
 7.  **Join or Bind**
 
--   `left_join()`, `bind_rows()` as needed
+    -   `left_join()`, `bind_rows()` as needed
 
 8.  **Collect to Memory (next session)**
 
--   `collect()` for `arrow` or `duckdb` workflows when you're ready to compute
+    -   `collect()` for `arrow` or `duckdb` workflows when you're ready to compute
 
 9.  **Visualize or Write Out**
 
--   `ggplot()`, `write_csv()`, or store to `.parquet`, `.csv`, `.duckdb`, etc.
+    -   `ggplot()`, `write_csv()`, or store to `.parquet`, `.csv`, `.duckdb`, etc.
 
 🔗 Building Pipelines: The dplyr Way Here's the general pattern we'll use throughout the workshop:
 
-```         
+```{r}
+#| eval: false
+
+# Psuedocode review
 data |>                          # 1. Start with data
   filter(condition) |>           # 2. Filter early (reduce rows)
   select(relevant_columns) |>    # 3. Select early (reduce columns)  
@@ -296,19 +299,30 @@ Now it's your turn to practice! Work with a partner and help each other.
 
 **Hints**:
 
-1.   Start with `starwars`
+1.  Start with `starwars`
 
-2.   Remove rows where `height` is missing
+2.  Remove rows where `height` is missing
 
-3.   Group by `homeworld`
+3.  Group by `homeworld`
 
-4.   Find the maximum height in each group
+4.  Find the maximum height in each group
 
-5.   Keep only the name, homeworld, and height columns
+5.  Keep only the homeworld and height columns
 
-    ```{r}
-    # Your code here - try before looking at the solution! starwars |>    filter(!is.na(height)) |>    # Add your code here
-    ```
+```{r}
+# Your code here - try before looking at the solution!
+# Add your code here
+```
+
+```{r}
+# Solution
+max_height_summary <- starwars |>
+  filter(!is.na(height)) |>
+  mutate(height_m = height / 100) |>
+  group_by(homeworld) |>
+  summarize(max_height_m = max(height_m)) |>
+  select(homeworld, max_height_m)
+```
 
 **Stretch goal**: Can you also find the shortest character from each homeworld?
 
@@ -320,58 +334,80 @@ Now it's your turn to practice! Work with a partner and help each other.
 
 **Requirements**:
 
-1.   Count how many different species live on each homeworld
+1.  Count how many different species live on each homeworld
 
-2.   Count the total number of characters from each homeworld
+2.  Count the total number of characters from each homeworld
 
-3.   Calculate the "diversity ratio" (species count / character count)
+3.  Calculate the "diversity ratio" (species count / character count)
 
-4.   Include the most common species on each homeworld
+4.  Include the most common species on each homeworld
 
-5.   Sort by diversity ratio (most diverse first)
+5.  Sort by diversity ratio (most diverse first)
 
-    ```{r}
-    # Hint: You might need to create intermediate summaries and then join them # or use window functions like `first()` or `nth()`  starwars |>    filter(!is.na(homeworld), !is.na(species)) |>    # Add your complex pipeline here
-    ```
+```{r}
+# Hint: You might need to create intermediate summaries and then join them # or use window functions like `first()` or `nth()`  starwars |>    filter(!is.na(homeworld), !is.na(species)) |>    # Add your complex pipeline here
+```
+
+```{r}
+# Solution
+character_count_lookup <- starwars |>
+  filter(!is.na(homeworld) & !is.na(species)) |>
+  group_by(homeworld, species) |>
+  summarize(character_count = n()) |>
+  select(homeworld, character_count)
+
+species_summary <- starwars |>
+  filter(!is.na(homeworld) & !is.na(species)) |>
+  group_by(homeworld, species) |>
+  summarize(character_count = n()) |>
+  ungroup() |>
+  group_by(homeworld) |>
+  summarize(species_count = length(unique(species))) |>
+  ungroup() |>
+  # select(-species) |>
+  left_join(character_count_lookup, by = "homeworld") |>
+  mutate(diversity_ratio = species_count/character_count) |>
+  arrange(desc(diversity_ratio))
+```
 
 **Stretch goals**:
 
--    Add average height and mass by homeworld
+-   Add average height and mass by homeworld
 
--    Create a visualization of your results
+-   Create a visualization of your results
 
--    Filter to show only homeworlds with more than 1 character
+-   Filter to show only homeworlds with more than 1 character
 
 ### 💡 Why These Challenges Matter
 
 These exercises demonstrate the **exact same thinking process** you'll use with big data:
 
-1.   **Filter early** to reduce data size
+1.  **Filter early** to reduce data size
 
-2.   **Select** only what you need
+2.  **Select** only what you need
 
-3.   **Group and summarize** to aggregate information
+3.  **Group and summarize** to aggregate information
 
-4.   **Arrange** to present results clearly
+4.  **Arrange** to present results clearly
 
 The only difference with big data is that we'll add:
 
--    `open_dataset()` instead of using built-in data
+-   `open_dataset()` instead of using built-in data
 
--    `collect()` at the end to bring results into memory
+-   `collect()` at the end to bring results into memory
 
--    `show_query()` to see what's happening behind the scenes
+-   `show_query()` to see what's happening behind the scenes
 
 ## 🚀 What's Coming Next
 
 In **Module 2**, we'll take these exact same dplyr skills and apply them to:
 
--    A 9GB CSV file (40+ million rows)
+-   A 9GB CSV file (40+ million rows)
 
--    Converting CSV to Parquet for 5x speed improvements
+-   Converting CSV to Parquet for 5x speed improvements
 
--    Processing data that's too large to fit in memory
+-   Processing data that's too large to fit in memory
 
--    Using `arrow` for lazy evaluation and streaming
+-   Using `arrow` for lazy evaluation and streaming
 
 **The promise**: Same `dplyr` syntax you just practiced, but on datasets that are 100x larger!
