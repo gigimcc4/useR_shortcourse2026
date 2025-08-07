@@ -38,7 +38,7 @@ The tools we’re introducing today **each play a specific role** in helping us 
 -   
 
     | Tool     | Purpose                                                                                                                                                                            |
-    |----------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+    |------------------------|-----------------------------------------------|
     | `arrow`  | 🗂️ (Columnar storage + lazy reading) → Efficiently reads large datasets **without loading the whole file into memory.** Supports fast filtering and streaming from disk.           |
     | `DBI`    | 🔌 (Database connection interface) → Provides a **common language to connect R to databases.** DuckDB uses it to talk to R.                                                        |
     | `duckdb` | 🚀 (Fast in-process SQL database) → Allows you to **query large datasets using SQL syntax inside R.** Works especially well for joins, aggregations, and window functions.         |
@@ -739,3 +739,5 @@ In **Module 2**, we'll take these exact same dplyr skills and apply them to:
 -   Using `arrow` for lazy evaluation and streaming
 
 **The promise**: Same `dplyr` syntax you just practiced, but on datasets that are 100x larger!
+
+*NSF Acknowledgement: This material is based upon work supported by the National Science Foundation under Grant #DGE-2222148. Any opinions, findings, and conclusions or recommendations expressed in this material are those of the author(s) and do not necessarily reflect the views of the National Science Foundation.*
