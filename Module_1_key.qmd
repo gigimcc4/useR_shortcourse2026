@@ -1,7 +1,12 @@
 ---
-title: "Module_1_intro_dplyr"
+title: "Module_1_participant"
 author: "Elyse, Jeanne & Sheila"
 format: 
+  html: 
+    toc: true
+    toc-depth: 4
+    toc-location: right
+    code-fold: true
   pdf:
     toc: true
     toc-depth: 4

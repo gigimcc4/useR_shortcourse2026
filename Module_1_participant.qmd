@@ -2,6 +2,11 @@
 title: "Module_1_participant"
 author: "Elyse, Jeanne & Sheila"
 format: 
+  html: 
+    toc: true
+    toc-depth: 4
+    toc-location: right
+    code-fold: true
   pdf:
     toc: true
     toc-depth: 4
@@ -673,3 +678,5 @@ In **Module 2**, we'll take these exact same dplyr skills and apply them to:
 -   Using `arrow` for lazy evaluation and streaming
 
 **The promise**: Same `dplyr` syntax you just practiced, but on datasets that are 100x larger!
+
+*NSF Acknowledgement: This material is based upon work supported by the National Science Foundation under Grant #DGE-2222148. Any opinions, findings, and conclusions or recommendations expressed in this material are those of the author(s) and do not necessarily reflect the views of the National Science Foundation.*

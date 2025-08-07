@@ -1,7 +1,12 @@
 ---
-title: "Module_2_key"
+title: "Module_2_arrow-key"
 author: "Elyse, Jeanne & Sheila"
 format: 
+  html: 
+    toc: true
+    toc-depth: 4
+    toc-location: right
+    code-fold: true
   pdf:
     toc: true
     toc-depth: 4
@@ -86,7 +91,7 @@ First, let's create a special folder to store our data:
 # Create a "data" directory if it doesn't exist already 
 # Using showWarnings = FALSE to suppress warning if directory already exists  
 
-dir.create("data", showWarnings = FALSE)
+#dir.create("data", showWarnings = FALSE)
 ```
 
 ### Step 2: Download the Dataset
@@ -105,7 +110,7 @@ Now for the fun part! We'll download the Seattle Library dataset (9GB).
 # 2. Save to local data directory 
 # 3. Use resume = TRUE to allow continuing interrupted downloads  
 
-curl::multi_download("https://r4ds.s3.us-west-2.amazonaws.com/seattle-library-checkouts.csv", "data/seattle-library-checkouts.csv", resume = TRUE )
+#curl::multi_download("https://r4ds.s3.us-west-2.amazonaws.com/seattle-library-checkouts.csv", "data/seattle-library-checkouts.csv", resume = TRUE )
 ```
 
 Why USE: [`curl::multi_download()`](https://jeroen.r-universe.dev/curl/reference/multi_download.html)
@@ -133,16 +138,16 @@ file.size("data/seattle-library-checkouts.csv") / 1024^3  # Size in GB
 
 Now let's see the fundamental difference between `read_csv()` and `open_dataset()`:
 
-DON'T RUN!
+**DON'T RUN!**
 
 ```{r eval=FALSE}
 
 # Traditional approach - would crash most computers!
 
-#seattle_library_checkouts <- read_csv("useR_memory/data/seattle-library-checkouts.csv") # DON'T RUN! 
+#seattle_library_checkouts <- read_csv("data/seattle-library-checkouts.csv") # DON'T RUN! 
 ```
 
-RUN
+**RUN**
 
 ```{r}
 
@@ -192,7 +197,7 @@ lapply(required_packages, library, character.only = TRUE)
 
 ```{r}
 # Arrow approach - creates a "view" without loading 
-seattle_csv <- open_dataset("useR_memory/data/seattle-library-checkouts.csv", format = "csv") 
+seattle_csv <- open_dataset("data/seattle-library-checkouts.csv", format = "csv")
 
 # View Object
 seattle_csv
@@ -203,13 +208,51 @@ library(glue) # string interpolation - cleaner alternative to paste()
 glue("Memory used by Arrow object: {format(object.size(seattle_csv), units = 'KB')}")
 
 # Let's see what the file size we are actually working with 
-file_size_bytes <- file.size("useR_memory/data/seattle-library-checkouts.csv")
+file_size_bytes <- file.size("data/seattle-library-checkouts.csv")
 file_size_gb <- file_size_bytes / (1024^3)  # Convert to GB
 glue("Estimated file size: {round(file_size_gb, 2)} GB")
 
 # Peek at the structure without loading 
 seattle_csv |> 
   glimpse()
+```
+
+## 🔍 **Handling the ISBN Null Issue**
+
+When we glimpse our dataset, we notice that the **ISBN column is showing as null**. This is a common issue when working with large datasets where Arrow's automatic schema detection encounters parsing challenges.
+
+### Why This Matters
+
+**For Arrow:**
+
+-    Arrow creates a schema based on the first few thousand rows it samples
+
+-    If it encounters mixed data types or parsing issues in the ISBN field, it may default to null
+
+-    This means we lose valuable bibliographic information that could be used for:
+
+    -    Identifying unique editions of books
+
+    -    Linking to external book databases
+
+    -    Analyzing publication patterns
+
+```{r}
+# Remove the current object that has the null ISBN issue
+rm(seattle_csv)
+
+# Recreate Seattle library checkout.csv data:
+# 1. Specify the CSV file path
+# 2. Set ISBN column to be read as string type to preserve leading zeros
+# 3. Define CSV as the file format
+seattle_csv <- open_dataset(
+  sources = "data/seattle-library-checkouts.csv", 
+  col_types = schema(ISBN = string()),
+  format = "csv"
+)
+
+#inspect
+glimpse(seattle_csv)
 ```
 
 **Key insight**: Arrow creates a "catalog" or "view" of your data without actually reading it into memory!
@@ -228,7 +271,7 @@ seattle_csv |>
 
 # 1. BASIC DATASET INFO (no data loading)
 glue("=== DATASET OVERVIEW ===")
-glue("File size: {format(file.size('useR_memory/data/seattle-library-checkouts.csv'), units = 'GB')}")
+glue("File size: {format(file.size('data/seattle-library-checkouts.csv'), units = 'GB')}")
 glue("Memory used by Arrow object: {format(object.size(seattle_csv), units = 'KB')}")
 
 # 2. SCHEMA EXPLORATION (metadata only)
@@ -383,21 +426,19 @@ Let's convert our massive CSV to Parquet and see the dramatic improvements:
 # Convert the entire dataset efficiently 
 
 seattle_csv |>   
-  write_dataset("useR_memory/data/seattle-library-checkouts-parquet/", format = "parquet")
+  write_dataset("data/parquet/seattle_parquet/", format = "parquet")
 ```
 
 ```{r eval=FALSE}
 
 # Compare file sizes
-csv_size <- file.size("useR_memory/data/seattle-library-checkouts.csv") 
-
-parquet_dir_size <- sum(file.size(list.files("useR_memory/data/seattle-library-checkouts-parquet/",                                              full.names = TRUE, recursive = TRUE))) 
-
-
+csv_size <- file.size("data/seattle-library-checkouts.csv") 
+parquet_dir_size <- sum(file.size(list.files("data/parquet/seattle_parquet/",                                              
+                                             full.names = TRUE, recursive = TRUE))) 
 # Show the comparison
 glue("Original CSV size: {csv_size}")
-glue("Parquet size: {parquet_size}")
-glue("Size reduction: {round(as.numeric(csv_size) / as.numeric(parquet_size), 1)}x smaller!")
+glue("Parquet size: {parquet_dir_size}")  # Changed from parquet_size
+glue("Size reduction: {round(as.numeric(csv_size) / as.numeric(parquet_dir_size), 1)}x smaller!")
 ```
 
 **🎯 Best practice for reproducible analysis:**
@@ -419,7 +460,7 @@ csv_time <- system.time({csv_result <- seattle_csv |>
   filter(CheckoutYear == 2020) |>      
   collect() })
 
-seattle_parquet <- open_dataset("useR_memory/data/seattle-library-checkouts-parquet/") 
+seattle_parquet <- open_dataset("data/parquet/seattle_parquet/")
 
 parquet_time <- system.time({parquet_result <- seattle_parquet |>      
   filter(CheckoutYear == 2020) |>      
@@ -605,11 +646,11 @@ print(actual_result)
 
 # ✅ Check if files exist first i
 
-if (file.exists("useR_memory/data/seattle-library-checkouts-parquet")) {   
-  data <- open_dataset("useR_memory/data/seattle-library-checkouts-parquet/")   
+if (file.exists("data/parquet/seattle_parquet/")) {   
+  data <- open_dataset("data/parquet/seattle_parquet/")   
   print("✅ Parquet dataset opened successfully!") 
-} else if (file.exists("useR_memory/data/seattle-library-checkouts.csv")) {   
-  data <- open_dataset("useR_memory/data/seattle-library-checkouts.csv", format = "csv")   
+} else if (file.exists("data/seattle-library-checkouts.csv")) {   
+  data <- open_dataset("data/seattle-library-checkouts.csv", format = "csv")   
   print("✅ CSV dataset opened successfully!") 
 } else {   
   print("❌ Please check your file path - dataset not found") 
