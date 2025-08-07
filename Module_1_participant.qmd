@@ -1,5 +1,5 @@
 ---
-title: "Module_1_intro_dplyr"
+title: "Module_1_participant"
 author: "Elyse, Jeanne & Sheila"
 format: 
   pdf:
@@ -38,7 +38,7 @@ The tools we’re introducing today **each play a specific role** in helping us 
 -   
 
     | Tool     | Purpose                                                                                                                                                                            |
-    |----------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+    |------------------------|-----------------------------------------------|
     | `arrow`  | 🗂️ (Columnar storage + lazy reading) → Efficiently reads large datasets **without loading the whole file into memory.** Supports fast filtering and streaming from disk.           |
     | `DBI`    | 🔌 (Database connection interface) → Provides a **common language to connect R to databases.** DuckDB uses it to talk to R.                                                        |
     | `duckdb` | 🚀 (Fast in-process SQL database) → Allows you to **query large datasets using SQL syntax inside R.** Works especially well for joins, aggregations, and window functions.         |
@@ -388,7 +388,7 @@ starwars |>
   )
 ```
 
-Advanced Summarize
+**Advanced Summarize**
 
 ```{r}
 # Conditional summaries
@@ -556,43 +556,30 @@ Now it's your turn to practice! Work with a partner and help each other or take 
 # Your code here - try before looking at the solution! 
 
 # Solution with detailed steps
-tallest_by_homeworld <- starwars |>
+
   # Step 1: Remove rows where height is missing
-  filter(!is.na(height)) |>
+
   
   # Step 2: Group by homeworld to analyze each separately
-  group_by(homeworld) |>
+
   
   # Step 3: For each homeworld, find the character with max height
-  filter(height == max(height)) |>  # Keep only the tallest in each group
+                            # Keep only the tallest in each group
   
   # Step 4: Select only the columns we care about
-  select(name, homeworld, height) |>
+
   
   # Step 5: Sort by height for easier reading
-  arrange(desc(height)) |>
+
   
   # Step 6: Remove grouping for clean output
-  ungroup()
+
 
 # Display the results
-tallest_by_homeworld
+
 ```
 
 **Stretch goal**: Can you also find the shortest character from each homeworld?
-
-```{r}
-# Find the shortest character from each homeworld
-shortest_by_homeworld <- starwars |>
-  filter(!is.na(height)) |>
-  group_by(homeworld) |>
-  filter(height == min(height)) |>  # Change max to min
-  select(name, homeworld, height) |>
-  arrange(height) |>  # Sort ascending instead of descending
-  ungroup()
-
-shortest_by_homeworld
-```
 
 ### 🟡 Intermediate Challenge (10-15 minutes)
 
@@ -616,95 +603,42 @@ shortest_by_homeworld
 # Your code here - try before looking at the solution! 
 
 # Step 1: Create the main diversity summary
-homeworld_diversity <- starwars |>
+
   # Remove rows with missing homeworld or species
-  filter(!is.na(homeworld), !is.na(species)) |>
+
   
   # Group by homeworld to analyze each separately
-  group_by(homeworld) |>
+
   
   # Calculate diversity metrics
-  summarise(
+
     # Count unique species
-    species_count = n_distinct(species),
+
     
     # Count total characters
-    character_count = n(),
+
     
     # Calculate diversity ratio
-    diversity_ratio = species_count / character_count,
+
     
     # Find most common species (first alphabetically if tied)
-    most_common_species = names(sort(table(species), decreasing = TRUE))[1],
+
     
     # Keep groups for potential further operations
-    .groups = "keep"
-  ) |>
+
   
   # Remove grouping and sort by diversity ratio
-  ungroup() |>
-  arrange(desc(diversity_ratio))
+
 
 # Display results
-homeworld_diversity
+
 ```
 
 **Stretch goals**:
 
 -   Add average height and mass by homeworld
 
-```{r}
-# Enhanced summary with physical characteristics
-enhanced_diversity <- starwars |>
-  filter(!is.na(homeworld), !is.na(species)) |>
-  group_by(homeworld) |>
-  summarise(
-    species_count = n_distinct(species),
-    character_count = n(),
-    diversity_ratio = round(species_count / character_count, 3),
-    
-    # Physical characteristics
-    avg_height = round(mean(height, na.rm = TRUE), 1),
-    avg_mass = round(mean(mass, na.rm = TRUE), 1),
-    
-    # Most common species
-    most_common_species = first(species[which.max(table(species))]),
-    
-    .groups = "drop"
-  ) |>
-  filter(character_count > 1) |>
-  arrange(desc(diversity_ratio))
-
-enhanced_diversity
-```
-
 -   Create a visualization of your results
-
-```{r}
-
-# Visualize diversity across homeworlds
-diversity_plot <- homeworld_diversity |>
-  filter(character_count > 1) |>  # Only homeworlds with multiple characters
-  ggplot(aes(x = reorder(homeworld, diversity_ratio), y = diversity_ratio)) +
-  geom_col(fill = "steelblue", alpha = 0.7) +
-  geom_text(aes(label = paste(species_count, "/", character_count)), 
-            hjust = -0.1, size = 3) +
-  coord_flip() +
-  labs(
-    title = "Species Diversity by Homeworld",
-    subtitle = "Ratio of unique species to total characters",
-    x = "Homeworld",
-    y = "Diversity Ratio (Species Count / Character Count)",
-    caption = "Numbers show species_count / character_count"
-  ) +
-  theme_minimal() +
-  theme(
-    plot.title = element_text(size = 14, face = "bold"),
-    axis.text = element_text(size = 10)
-  )
-
-diversity_plot
-```
 
 ### 💡 Why These Challenges Matter
 
