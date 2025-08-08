@@ -50,9 +50,9 @@ data |>
 ```         
 # Create a "view" of the data, then filter 
 
-data <- open_dataset("huge_file.csv")  # ✅ Instant! d
+data <- open_dataset("huge_file.csv")  # ✅ Instant! 
 
-ata |> filter(year == 2023) 
+data |> filter(year == 2023) 
   |> collect()  # Only brings filtered results to memory
 ```
 
