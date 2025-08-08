@@ -36,6 +36,8 @@ By the end of this module, you will be able to:
 
 **Traditional R thinking**:
 
+> The code chuck below is psuedo-code!
+
 ```         
 # Load EVERYTHING into memory first 
 
@@ -47,12 +49,14 @@ data |>
 
 **Arrow thinking**:
 
+> The code chuck below is psuedo-code!
+
 ```         
 # Create a "view" of the data, then filter 
 
 data <- open_dataset("huge_file.csv")  # ✅ Instant! d
 
-ata |> filter(year == 2023) 
+data |> filter(year == 2023) 
   |> collect()  # Only brings filtered results to memory
 ```
 
@@ -110,7 +114,7 @@ Now for the fun part! We'll download the Seattle Library dataset (9GB).
 # 2. Save to local data directory 
 # 3. Use resume = TRUE to allow continuing interrupted downloads  
 
-#curl::multi_download("https://r4ds.s3.us-west-2.amazonaws.com/seattle-library-checkouts.csv", "data/seattle-library-checkouts.csv", resume = TRUE )
+#curl::multi_download("https://r4ds.s3.us-west-2.amazonaws.com/seattle-library-checkouts.csv", "data/seattle-library-checkouts.csv", resume = TRUE)
 ```
 
 Why USE: [`curl::multi_download()`](https://jeroen.r-universe.dev/curl/reference/multi_download.html)
@@ -225,17 +229,19 @@ When we glimpse our dataset, we notice that the **ISBN column is showing as null
 
 **For Arrow:**
 
--    Arrow creates a schema based on the first few thousand rows it samples
+-   Arrow creates a schema based on the first few thousand rows it samples
 
--    If it encounters mixed data types or parsing issues in the ISBN field, it may default to null
+-   If it encounters mixed data types or parsing issues in the ISBN field, it may default to null
 
--    This means we lose valuable bibliographic information that could be used for:
+-   This means we lose valuable bibliographic information that could be used for:
 
-    -    Identifying unique editions of books
+```         
+-    Identifying unique editions of books
 
-    -    Linking to external book databases
+-    Linking to external book databases
 
-    -    Analyzing publication patterns
+-    Analyzing publication patterns
+```
 
 ```{r}
 # Remove the current object that has the null ISBN issue

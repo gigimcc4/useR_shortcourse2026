@@ -978,7 +978,7 @@ ggplot(format_percentages, aes(x = CheckoutYear, y = percentage,
 
 -   Use `filter(!is.na(Creator) & Creator != "")` to remove missing authors
 
--   Remember the mutate-after-summarise pattern for calculated columns
+-   Remember the mutate-after-summarize pattern for calculated columns
 
 -   Use `n_distinct(Title)` to count unique titles per author
 
@@ -1181,39 +1181,39 @@ data |>
 
 Now you have the complete toolkit:
 
--    **dplyr**: Intuitive data manipulation grammar
+-   **dplyr**: Intuitive data manipulation grammar
 
--    **Arrow**: Efficient large file processing
+-   **Arrow**: Efficient large file processing
 
--    **DuckDB**: Database-powered analytics
+-   **DuckDB**: Database-powered analytics
 
 **In real projects, you'll often use all three:**
 
-1.   **Arrow** to efficiently read your data
+1.  **Arrow** to efficiently read your data
 
-2.   **DuckDB** for complex analytics and joins
+2.  **DuckDB** for complex analytics and joins
 
-3.   **dplyr** as your consistent interface to both
+3.  **dplyr** as your consistent interface to both
 
 ### 📝 Quick Self-Assessment
 
 **I feel confident that I can**:
 
--    Connect R to DuckDB databases
+-   Connect R to DuckDB databases
 
--    Choose between Arrow and DuckDB for different tasks
+-   Choose between Arrow and DuckDB for different tasks
 
--    Use window functions for advanced analytics
+-   Use window functions for advanced analytics
 
--    Build reproducible analytical pipelines
+-   Build reproducible analytical pipelines
 
 **I'd like more practice with**:
 
--    SQL queries
+-   SQL queries
 
--    Window function syntax
+-   Window function syntax
 
--    Performance optimization
+-   Performance optimization
 
 -   Multi-table joins
 
