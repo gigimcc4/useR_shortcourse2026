@@ -483,8 +483,8 @@ starwars |>
 select(name, height)  # This won't work!  
 
 
-# ✅ Correct s
-tarwars |>   
+# ✅ Correct 
+starwars |>   
   filter(species == "Human") |>   
   select(name, height)
 ```
@@ -496,8 +496,8 @@ tarwars |>
 starwars |>   
   summarise(avg_height = mean(height))  
 
-# ✅ Handle NAs explicitly s
-tarwars |>   
+# ✅ Handle NAs explicitly 
+starwars |>   
   summarise(avg_height = mean(height, na.rm = TRUE))
 ```
 
